@@ -1,14 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextResponse } from "next/server";
-import { NextApiRequest } from "next";
+import { NextResponse, NextRequest } from "next/server";
 import axios from "@/app/api/axios";
 
-export const GET = async (
-  req: NextApiRequest,
-  context: { params: { id: string } }
-) => {
+export const GET = async (req: NextRequest, { params }: { params: any }) => {
   try {
-    const { id } = await context.params;
+    const { id } = await params;
     const response = await axios.get(`/api/users/${id}`, {
       headers: {
         Authorization: null,

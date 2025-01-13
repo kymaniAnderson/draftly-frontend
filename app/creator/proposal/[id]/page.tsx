@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -26,7 +27,7 @@ interface Content {
   content: string;
 }
 
-export default function Proposal() {
+export default function ProposalEdit() {
   const params = useParams<{ id: string }>();
   const [proposal, setProposal] = useState<Proposal>();
   const [loading, setLoading] = useState<boolean>(false);

@@ -1,62 +1,46 @@
 "use client";
 
-import { Stack, Box, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Stack, Box, Typography, CircularProgress } from "@mui/material";
 import ProtectedLayout from "@/components/ProtectedLayout";
 import TemplateCard from "@/components/cards/TemplateCard";
 
 interface Template {
-  id: number;
-  title: string;
-  description: string;
-  imageUrl: string;
+  id: string;
+  name: string;
   rating: number;
   hashtags: string[];
+  sections: Sections[];
+}
+interface Sections {
+  id: string;
+  title: string;
+  description: string;
+  templateId: string;
 }
 
-const templates: Template[] = [
-  {
-    id: 1,
-    title: "Awesome Resumes",
-    description:
-      "Description for template is placed here and should be updated",
-    imageUrl:
-      "https://res.cloudinary.com/kymani-personal/image/upload/v1736293404/default-no-image.avif",
-    rating: 4,
-    hashtags: ["Design", "UI"],
-  },
-  {
-    id: 2,
-    title: "Basic Bill of Sales",
-    description:
-      "Description for template is placed here and should be updated",
-    imageUrl:
-      "https://res.cloudinary.com/kymani-personal/image/upload/v1736293404/default-no-image.avif",
-    rating: 3,
-    hashtags: ["Branding", "Logo"],
-  },
-  {
-    id: 3,
-    title: "Code Contract",
-    description:
-      "Description for template is placed here and should be updated",
-    imageUrl:
-      "https://res.cloudinary.com/kymani-personal/image/upload/v1736293404/default-no-image.avif",
-    rating: 5,
-    hashtags: ["WebDev", "React"],
-  },
-  {
-    id: 4,
-    title: "Powerful CVs",
-    description:
-      "Description for template is placed here and should be updated",
-    imageUrl:
-      "https://res.cloudinary.com/kymani-personal/image/upload/v1736293404/default-no-image.avif",
-    rating: 5,
-    hashtags: ["WebDev", "React"],
-  },
-];
-
 export default function BrowseTemplates() {
+  const [templates, setTemplates] = useState<Template[] | null>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("/api/templates");
+        const data = await response.json();
+        setTemplates(data);
+      } catch (err) {
+        //TODO: Find a better way to do this
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTemplates();
+  }, []);
+
   return (
     <ProtectedLayout>
       <Stack spacing={4}>
@@ -72,28 +56,36 @@ export default function BrowseTemplates() {
             }}
             gutterBottom
           >
-            BROWSE TEMPLATES
+            🔍 BROWSE TEMPLATES
           </Typography>
-          <Stack
-            sx={{
-              display: "grid",
-              gap: 2,
-              gridTemplateColumns: {
-                sm: "1fr",
-                md: "repeat(2, 1fr)",
-                lg: "repeat(4, 1fr)",
-              },
-            }}
-          >
-            {templates.map((template) => (
-              <Box
-                key={template.id}
-                sx={{ flexBasis: "calc(25% - 16px)", boxSizing: "border-box" }}
-              >
-                <TemplateCard template={template} />
-              </Box>
-            ))}
-          </Stack>
+
+          {loading ? (
+            <CircularProgress />
+          ) : (
+            <Stack
+              sx={{
+                display: "grid",
+                gap: 2,
+                gridTemplateColumns: {
+                  sm: "1fr",
+                  md: "repeat(2, 1fr)",
+                  lg: "repeat(4, 1fr)",
+                },
+              }}
+            >
+              {templates?.map((template) => (
+                <Box
+                  key={template.id}
+                  sx={{
+                    flexBasis: "calc(25% - 16px)",
+                    boxSizing: "border-box",
+                  }}
+                >
+                  <TemplateCard template={template} />
+                </Box>
+              ))}
+            </Stack>
+          )}
         </Box>
       </Stack>
     </ProtectedLayout>

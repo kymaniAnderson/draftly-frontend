@@ -1,105 +1,76 @@
 "use client";
 
-import { Stack, Box, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Stack, Box, Typography, CircularProgress } from "@mui/material";
 import ProtectedLayout from "@/components/ProtectedLayout";
 import TemplateCard from "@/components/cards/TemplateCard";
 import ProposalCard from "@/components/cards/ProposalCard";
 
 interface Template {
-  id: number;
-  title: string;
-  description: string;
-  imageUrl: string;
+  id: string;
+  name: string;
   rating: number;
   hashtags: string[];
+  sections: Sections[];
+}
+interface Sections {
+  id: string;
+  title: string;
+  description: string;
+  templateId: string;
 }
 
 interface Proposal {
-  id: number;
+  id: string;
   title: string;
-  description: string;
-  imageUrl: string;
+  userContext: string;
+  content: Content[];
+  templateId: string;
+  userId: string;
+}
+interface Content {
+  title: string;
+  content: string;
 }
 
-const templates: Template[] = [
-  {
-    id: 1,
-    title: "Awesome Resumes",
-    description:
-      "Description for template is placed here and should be updated",
-    imageUrl:
-      "https://res.cloudinary.com/kymani-personal/image/upload/v1736293404/default-no-image.avif",
-    rating: 4,
-    hashtags: ["Design", "UI"],
-  },
-  {
-    id: 2,
-    title: "Basic Bill of Sales",
-    description:
-      "Description for template is placed here and should be updated",
-    imageUrl:
-      "https://res.cloudinary.com/kymani-personal/image/upload/v1736293404/default-no-image.avif",
-    rating: 3,
-    hashtags: ["Branding", "Logo"],
-  },
-  {
-    id: 3,
-    title: "Code Contract",
-    description:
-      "Description for template is placed here and should be updated",
-    imageUrl:
-      "https://res.cloudinary.com/kymani-personal/image/upload/v1736293404/default-no-image.avif",
-    rating: 5,
-    hashtags: ["WebDev", "React"],
-  },
-  {
-    id: 4,
-    title: "Powerful CVs",
-    description:
-      "Description for template is placed here and should be updated",
-    imageUrl:
-      "https://res.cloudinary.com/kymani-personal/image/upload/v1736293404/default-no-image.avif",
-    rating: 5,
-    hashtags: ["WebDev", "React"],
-  },
-];
-
-const proposals: Proposal[] = [
-  {
-    id: 1,
-    title: "Awesome Resumes",
-    description:
-      "Description for template is placed here and should be updated",
-    imageUrl:
-      "https://res.cloudinary.com/kymani-personal/image/upload/v1736293404/default-no-image.avif",
-  },
-  {
-    id: 2,
-    title: "Basic Bill of Sales",
-    description:
-      "Description for template is placed here and should be updated",
-    imageUrl:
-      "https://res.cloudinary.com/kymani-personal/image/upload/v1736293404/default-no-image.avif",
-  },
-  {
-    id: 3,
-    title: "Code Contract",
-    description:
-      "Description for template is placed here and should be updated",
-    imageUrl:
-      "https://res.cloudinary.com/kymani-personal/image/upload/v1736293404/default-no-image.avif",
-  },
-  {
-    id: 4,
-    title: "Powerful CVs",
-    description:
-      "Description for template is placed here and should be updated",
-    imageUrl:
-      "https://res.cloudinary.com/kymani-personal/image/upload/v1736293404/default-no-image.avif",
-  },
-];
-
 export default function Dashboard() {
+  const [templates, setTemplates] = useState<Template[] | null>([]);
+  const [proposals, setProposals] = useState<Proposal[] | null>([]);
+  const [loadingTemplates, setLoadingTemplates] = useState<boolean>(true);
+  const [loadingProposals, setLoadingProposals] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        setLoadingTemplates(true);
+        const response = await fetch("/api/templates");
+        const data = await response.json();
+        setTemplates(data);
+      } catch (err) {
+        //TODO: Find a better way to do this
+        console.log(err);
+      } finally {
+        setLoadingTemplates(false);
+      }
+    };
+    const fetchProposals = async () => {
+      try {
+        setLoadingProposals(true);
+        const response = await fetch("/api/proposals");
+        const data = await response.json();
+        setProposals(data);
+      } catch (err) {
+        //TODO: Find a better way to do this
+        console.log(err);
+      } finally {
+        setLoadingProposals(false);
+      }
+    };
+
+    fetchTemplates();
+    fetchProposals();
+  }, []);
+
   return (
     <ProtectedLayout>
       <Stack spacing={4}>
@@ -115,28 +86,38 @@ export default function Dashboard() {
             }}
             gutterBottom
           >
-            TEMPLATES
+            🔥 HOT TEMPLATES
           </Typography>
-          <Stack
-            sx={{
-              display: "grid",
-              gap: 2,
-              gridTemplateColumns: {
-                sm: "1fr",
-                md: "repeat(2, 1fr)",
-                lg: "repeat(4, 1fr)",
-              },
-            }}
-          >
-            {templates.map((template) => (
-              <Box
-                key={template.id}
-                sx={{ flexBasis: "calc(25% - 16px)", boxSizing: "border-box" }}
-              >
-                <TemplateCard template={template} />
-              </Box>
-            ))}
-          </Stack>
+          {loadingTemplates ? (
+            <CircularProgress />
+          ) : (
+            <Stack
+              sx={{
+                display: "grid",
+                gap: 2,
+                gridTemplateColumns: {
+                  sm: "1fr",
+                  md: "repeat(2, 1fr)",
+                  lg: "repeat(4, 1fr)",
+                },
+              }}
+            >
+              {templates
+                ?.filter((template) => template.rating >= 4)
+                .slice(0, 4)
+                .map((template) => (
+                  <Box
+                    key={template.id}
+                    sx={{
+                      flexBasis: "calc(25% - 16px)",
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    <TemplateCard template={template} />
+                  </Box>
+                ))}
+            </Stack>
+          )}
         </Box>
         <Box component="section" sx={{ p: 1 }}>
           <Typography
@@ -150,28 +131,35 @@ export default function Dashboard() {
             }}
             gutterBottom
           >
-            PROPOSALS
+            ⌛ RECENT PROPOSALS
           </Typography>
-          <Stack
-            sx={{
-              display: "grid",
-              gap: 2,
-              gridTemplateColumns: {
-                sm: "1fr",
-                md: "repeat(2, 1fr)",
-                lg: "repeat(4, 1fr)",
-              },
-            }}
-          >
-            {proposals.map((proposal) => (
-              <Box
-                key={proposal.id}
-                sx={{ flexBasis: "calc(25% - 16px)", boxSizing: "border-box" }}
-              >
-                <ProposalCard proposal={proposal} />
-              </Box>
-            ))}
-          </Stack>
+          {loadingProposals ? (
+            <CircularProgress />
+          ) : (
+            <Stack
+              sx={{
+                display: "grid",
+                gap: 2,
+                gridTemplateColumns: {
+                  sm: "1fr",
+                  md: "repeat(2, 1fr)",
+                  lg: "repeat(4, 1fr)",
+                },
+              }}
+            >
+              {proposals?.map((proposal) => (
+                <Box
+                  key={proposal.id}
+                  sx={{
+                    flexBasis: "calc(25% - 16px)",
+                    boxSizing: "border-box",
+                  }}
+                >
+                  <ProposalCard proposal={proposal} />
+                </Box>
+              ))}
+            </Stack>
+          )}
         </Box>
       </Stack>
     </ProtectedLayout>

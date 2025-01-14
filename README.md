@@ -1,7 +1,7 @@
 # ✏️ Draftly - AI-Assisted Proposal Generator (Next.js with Auth0)
 
 ## 📄 Description
-Draftly is a web application designed to help users create professional proposals with AI assistance. This version uses **Next.js** and integrates **Auth0** for secure user authentication.
+Draftly is a web application designed to help users create professional proposals with AI assistance. This version uses **Nextjs** and integrates **Auth0** for secure user authentication.
 
 ## 🚀 Features
 

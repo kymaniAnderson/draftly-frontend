@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import { Stack, Box, Typography, CircularProgress } from "@mui/material";
 import ProtectedLayout from "@/components/ProtectedLayout";
 import TemplateCard from "@/components/cards/TemplateCard";
@@ -34,6 +35,7 @@ interface Content {
 }
 
 export default function Dashboard() {
+  const { user, isLoading } = useUser();
   const [templates, setTemplates] = useState<Template[] | null>([]);
   const [proposals, setProposals] = useState<Proposal[] | null>([]);
   const [loadingTemplates, setLoadingTemplates] = useState<boolean>(true);
@@ -54,22 +56,24 @@ export default function Dashboard() {
       }
     };
     const fetchProposals = async () => {
-      try {
-        setLoadingProposals(true);
-        const response = await fetch("/api/proposals");
-        const data = await response.json();
-        setProposals(data);
-      } catch (err) {
-        //TODO: Find a better way to do this
-        console.log(err);
-      } finally {
-        setLoadingProposals(false);
+      if (!isLoading) {
+        try {
+          setLoadingProposals(true);
+          const response = await fetch(`/api/users/${user?.sub}`);
+          const data = await response.json();
+          setProposals(data);
+        } catch (err) {
+          //TODO: Find a better way to do this
+          console.log(err);
+        } finally {
+          setLoadingProposals(false);
+        }
       }
     };
 
     fetchTemplates();
     fetchProposals();
-  }, []);
+  }, [isLoading, user]);
 
   return (
     <ProtectedLayout>

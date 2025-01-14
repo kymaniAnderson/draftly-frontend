@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import { Stack, Box, Typography, CircularProgress } from "@mui/material";
 import ProtectedLayout from "@/components/ProtectedLayout";
 import ProposalCard from "@/components/cards/ProposalCard";
@@ -19,26 +20,29 @@ interface Content {
 }
 
 export default function BrowseProposals() {
+  const { user, isLoading } = useUser();
   const [proposals, setProposals] = useState<Proposal[] | null>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchProposals = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("/api/proposals");
-        const data = await response.json();
-        setProposals(data);
-      } catch (err) {
-        //TODO: Find a better way to do this
-        console.log(err);
-      } finally {
-        setLoading(false);
+      if (!isLoading) {
+        try {
+          setLoading(true);
+          const response = await fetch(`/api/users/${user?.sub}`);
+          const data = await response.json();
+          setProposals(data?.proposals);
+        } catch (err) {
+          //TODO: Find a better way to do this
+          console.log(err);
+        } finally {
+          setLoading(false);
+        }
       }
     };
 
     fetchProposals();
-  }, []);
+  }, [isLoading, user]);
 
   return (
     <ProtectedLayout>

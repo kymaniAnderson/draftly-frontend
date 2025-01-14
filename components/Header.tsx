@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, MouseEvent } from "react";
+import { usePathname } from "next/navigation";
 import {
   Container,
   AppBar,
@@ -27,6 +28,7 @@ export default function Header({
     email?: string | undefined;
   };
 }) {
+  const pathname = usePathname();
   const [anchorNav, setAnchorNav] = useState<HTMLElement | null>(null);
 
   const pages = [
@@ -129,23 +131,29 @@ export default function Header({
               justifyContent: "center",
             }}
           >
-            {pages?.map((page) => (
-              <Link key={page.name} href={page.href} passHref>
-                <Button
-                  sx={{
-                    my: 2,
-                    color: "white",
-                    display: "block",
-                    "&:hover": {
-                      backgroundColor: "rgba(255, 255, 255, 0.2)",
-                      borderRadius: "1rem",
-                    },
-                  }}
-                >
-                  {page.name}
-                </Button>
-              </Link>
-            ))}
+            {pages?.map((page) => {
+              const isActive = pathname.startsWith(page.href);
+              return (
+                <Link key={page.name} href={page.href} passHref>
+                  <Button
+                    sx={{
+                      my: 2,
+                      color: "white",
+                      display: "block",
+                      backgroundColor: isActive
+                        ? "rgba(255, 255, 255, 0.2)"
+                        : "transparent",
+                      "&:hover": {
+                        backgroundColor: "rgba(255, 255, 255, 0.2)",
+                        borderRadius: "1rem",
+                      },
+                    }}
+                  >
+                    {page.name}
+                  </Button>
+                </Link>
+              );
+            })}
           </Box>
 
           <Box

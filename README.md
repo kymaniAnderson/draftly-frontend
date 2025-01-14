@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ✏️ Draftly - AI-Assisted Proposal Generator (Next.js with Auth0)
 
-## Getting Started
+## 📄 Description
+Draftly is a web application designed to help users create professional proposals with AI assistance. This version uses **Next.js** and integrates **Auth0** for secure user authentication.
 
-First, run the development server:
+## 🚀 Features
 
+- AI-powered proposal generation
+- Secure authentication with Auth0
+- Customizable templates and content
+- Export proposals as PDF
+---
+
+## 🛠️ Installation & Setup
+
+### 1. Clone the Repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/kymaniAnderson/draftly-frontend.git
+cd draftly-frontend
+```
+### 2. Install dependencies
+```bash
+yarn install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Configure Auth0
+- Create an application in the Auth0 Dashboard
+- Set the callback URL: http://localhost:3000/api/auth/callback
+- Set the logout URL: http://localhost:3000/
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Create .env.local file
+Structure:
+```bash
+AUTH0_SECRET=<YOUR_AUTH0_SECRET>
+AUTH0_BASE_URL=<YOUR_AUTH0_BASE_URL>
+AUTH0_ISSUER_BASE_URL=<YOUR_AUTH0_ISSUER_BASE_URL>
+AUTH0_CLIENT_ID=<YOUR_AUTH0_CLIENT_ID>
+AUTH0_CLIENT_SECRET=<YOUR_AUTH0_CLIENT_SECRET>
+BACKEND_URL=<YOUR_BACKEND_URL>
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ▶️ Run the application
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 1. Start the development server
+```bash 
+yarn dev
+```

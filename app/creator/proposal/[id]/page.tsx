@@ -42,7 +42,7 @@ export default function ProposalEdit() {
         const response = await fetch(`/api/proposals/${params?.id}`);
         const data = await response.json();
         setProposal(data);
-        const cnt = data?.content.map(
+        const cnt = data?.content?.map(
           (item: Partial<Content>, index: number) => ({
             id: (index++).toString(),
             ...item,
@@ -145,7 +145,7 @@ export default function ProposalEdit() {
         ) : (
           <Box sx={{ marginTop: 4 }}>
             <DndContext onDragEnd={handleDragEnd}>
-              <SortableContext items={contents.map((content) => content.id)}>
+              <SortableContext items={contents?.map((content) => content.id)}>
                 {contents?.map((section, index) => (
                   <MovableSectionCard
                     key={index}

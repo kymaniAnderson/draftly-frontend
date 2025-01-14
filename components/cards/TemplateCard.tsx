@@ -50,7 +50,7 @@ export default function TemplateCard({
           <Rating name="rating" value={template.rating} readOnly />
         </Box>
         <Box mt={1}>
-          {template.hashtags.map((hashtag) => (
+          {template?.hashtags?.map((hashtag) => (
             <Chip
               key={hashtag}
               label={`#${hashtag}`}

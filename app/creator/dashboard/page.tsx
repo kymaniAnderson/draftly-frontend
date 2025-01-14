@@ -108,8 +108,8 @@ export default function Dashboard() {
             >
               {templates
                 ?.filter((template) => template.rating >= 4)
-                .slice(0, 4)
-                .map((template) => (
+                ?.slice(0, 4)
+                ?.map((template) => (
                   <Box
                     key={template.id}
                     sx={{

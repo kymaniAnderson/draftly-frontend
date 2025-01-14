@@ -92,7 +92,7 @@ export default function Header({
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: "block", md: "none" } }}
             >
-              {pages.map((page) => (
+              {pages?.map((page) => (
                 <MenuItem key={page.name} onClick={handleCloseNavMenu}>
                   <Link href={page.href} passHref>
                     <Typography sx={{ textAlign: "center" }}>
@@ -129,7 +129,7 @@ export default function Header({
               justifyContent: "center",
             }}
           >
-            {pages.map((page) => (
+            {pages?.map((page) => (
               <Link key={page.name} href={page.href} passHref>
                 <Button
                   sx={{

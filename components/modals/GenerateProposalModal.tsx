@@ -1,7 +1,8 @@
 import React, { useState, ChangeEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import { Stack, Modal, Box, Typography, TextField } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { useRouter } from "next/navigation";
 
 export default function GenerateProposalModal({
   open,
@@ -13,6 +14,7 @@ export default function GenerateProposalModal({
   templateId: string;
 }) {
   const router = useRouter();
+  const { user } = useUser();
   const [context, setContext] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -25,9 +27,22 @@ export default function GenerateProposalModal({
     setContext(e.target.value);
   };
 
+  const findUser = async () => {
+    try {
+      const response = await fetch(`/api/users/${user?.sub}`);
+      if (!response.ok) throw new Error("Failed to fetch user data");
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      //TODO: Find a better way to do this
+      console.log(err);
+    }
+  };
+
   const handleGenerateAIProposal = async () => {
     try {
       setLoading(true);
+      const { id } = await findUser();
       const response = await fetch("/api/proposals", {
         method: "POST",
         headers: {
@@ -38,8 +53,7 @@ export default function GenerateProposalModal({
           userContext: context,
           content: [],
           templateId: templateId,
-          //TODO: add userId
-          userId: "",
+          userId: id,
         }),
       });
 

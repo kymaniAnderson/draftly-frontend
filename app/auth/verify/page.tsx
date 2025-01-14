@@ -24,62 +24,63 @@ export default function Verify() {
     setSnackbarOpen(false);
   };
 
-  const createUser = async () => {
-    if (!user) return;
-
-    try {
-      const response = await fetch("/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          authKey: user.sid,
-          name: user.name || "",
-          email: user.email,
-        }),
-      });
-
-      if (!response.ok) throw new Error("Failed to create user");
-
-      setSnackbarMessage("User account created successfully!");
-      setSnackbarSeverity("success");
-      setSnackbarOpen(true);
-
-      router.push("/creator/dashboard");
-    } catch (err) {
-      //TODO: Find better way to do this
-      console.log(err);
-      setSnackbarMessage("Failed to create user. Please try again.");
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
-    }
-  };
-
   useEffect(() => {
-    if (!isLoading && user) {
-      const checkUserExists = async () => {
-        try {
-          const response = await fetch(`/api/users/${user?.sid}`);
-          if (!response.ok) throw new Error("Failed to fetch user data");
+    const createUser = async () => {
+      if (!user) return;
 
-          const data = await response.json();
-          if (!data?.id) {
-            createUser();
-          } else {
-            router.push("/creator/dashboard");
-          }
-        } catch (err) {
-          //TODO: Find better way to do this
-          console.log(err);
-          setSnackbarMessage("Error verifying user. Please try again.");
-          setSnackbarSeverity("error");
-          setSnackbarOpen(true);
+      try {
+        const response = await fetch("/api/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            authKey: user.sub,
+            name: user.name || "",
+            email: user.email,
+          }),
+        });
+
+        if (!response.ok) throw new Error("Failed to create user");
+
+        setSnackbarMessage("User account created successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+
+        router.push("/creator/dashboard");
+      } catch (err) {
+        //TODO: Find better way to do this
+        console.log(err);
+        setSnackbarMessage("Failed to create user. Please try again.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      }
+    };
+
+    const checkUserExists = async () => {
+      try {
+        const response = await fetch(`/api/users/${user?.sub}`);
+        if (!response.ok) throw new Error("Failed to fetch user data");
+
+        const data = await response.json();
+
+        if (!data?.id) {
+          createUser();
+        } else {
+          router.push("/creator/dashboard");
         }
-      };
+      } catch (err) {
+        //TODO: Find a better way to do this
+        console.log(err);
+        setSnackbarMessage("Error verifying user. Please try again.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      }
+    };
+
+    if (!isLoading && user) {
       checkUserExists();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, isLoading, router]);
 
   return (

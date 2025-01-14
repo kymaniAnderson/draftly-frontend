@@ -26,11 +26,7 @@ export default function Landing() {
         <Typography variant="body1" gutterBottom>
           Ready to start your journey with us?
         </Typography>
-        <Button
-          variant="outlined"
-          href="/api/auth/login?returnTo=/creator/dashboard"
-          sx={{ mt: 2 }}
-        >
+        <Button variant="outlined" href="/api/auth/login" sx={{ mt: 2 }}>
           Login
         </Button>
       </Box>

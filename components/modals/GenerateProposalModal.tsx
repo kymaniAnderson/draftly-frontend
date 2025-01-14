@@ -43,9 +43,7 @@ export default function GenerateProposalModal({
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to create proposal");
-      }
+      if (!response.ok) throw new Error("Failed to create proposal");
 
       const data = await response.json();
       console.log(data);

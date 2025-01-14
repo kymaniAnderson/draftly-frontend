@@ -35,7 +35,7 @@ export const POST = async (req: NextRequest) => {
       {
         error:
           error?.response?.data?.message ??
-          "There was a problem creating the template",
+          "There was a problem creating the proposal",
       },
       { status: error?.response?.status ?? 500 }
     );

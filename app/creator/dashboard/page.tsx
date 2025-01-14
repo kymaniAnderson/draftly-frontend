@@ -61,7 +61,7 @@ export default function Dashboard() {
           setLoadingProposals(true);
           const response = await fetch(`/api/users/${user?.sub}`);
           const data = await response.json();
-          setProposals(data);
+          setProposals(data?.proposals);
         } catch (err) {
           //TODO: Find a better way to do this
           console.log(err);

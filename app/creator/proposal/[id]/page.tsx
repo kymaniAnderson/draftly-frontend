@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -9,6 +8,8 @@ import {
   Typography,
   CircularProgress,
 } from "@mui/material";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import ProtectedLayout from "@/components/ProtectedLayout";
 import MovableSectionCard from "@/components/dnd/MovableSectionCard";
 import { jsPDF } from "jspdf";
@@ -23,6 +24,7 @@ interface Proposal {
   userId: string;
 }
 interface Content {
+  id: string;
   title: string;
   content: string;
 }
@@ -31,15 +33,22 @@ export default function ProposalEdit() {
   const params = useParams<{ id: string }>();
   const [proposal, setProposal] = useState<Proposal>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [contents, setContents] = useState<Content[]>([]);
 
   useEffect(() => {
-    console.log(params);
     const fetchProposal = async () => {
       try {
         setLoading(true);
         const response = await fetch(`/api/proposals/${params?.id}`);
         const data = await response.json();
         setProposal(data);
+        const cnt = data?.content.map(
+          (item: Partial<Content>, index: number) => ({
+            id: (index++).toString(),
+            ...item,
+          })
+        );
+        setContents(cnt);
       } catch (err) {
         console.error(err);
       } finally {
@@ -48,7 +57,22 @@ export default function ProposalEdit() {
     };
 
     fetchProposal();
-  }, []);
+  }, [params?.id]);
+
+  const handleDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
+    if (active.id !== over?.id) {
+      setContents((prevContents) => {
+        const oldIndex = prevContents.findIndex(
+          (content) => content.id === active.id
+        );
+        const newIndex = prevContents.findIndex(
+          (content) => content.id === over?.id
+        );
+        return arrayMove(prevContents, oldIndex, newIndex);
+      });
+    }
+  };
 
   const handleSave = (
     editedTitle: string | null,
@@ -120,16 +144,21 @@ export default function ProposalEdit() {
           <CircularProgress />
         ) : (
           <Box sx={{ marginTop: 4 }}>
-            {proposal?.content?.map((section, index) => (
-              <MovableSectionCard
-                key={index}
-                title={section.title}
-                content={section.content}
-                onSave={(editedTitle, editedContent) =>
-                  handleSave(editedTitle, editedContent, index)
-                }
-              />
-            ))}
+            <DndContext onDragEnd={handleDragEnd}>
+              <SortableContext items={contents.map((content) => content.id)}>
+                {contents?.map((section, index) => (
+                  <MovableSectionCard
+                    key={index}
+                    id={section.id}
+                    title={section.title}
+                    content={section.content}
+                    onSave={(editedTitle, editedContent) =>
+                      handleSave(editedTitle, editedContent, index)
+                    }
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
           </Box>
         )}
       </Stack>
